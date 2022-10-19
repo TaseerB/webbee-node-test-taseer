@@ -1,4 +1,4 @@
-import { QueryInterface } from 'sequelize';
+import { literal, ModelAttributes, QueryInterface } from 'sequelize';
 
 export default {
   /**
@@ -31,8 +31,79 @@ export default {
    * As a cinema owner I don't want to configure the seating for every show
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  up: (queryInterface: QueryInterface): Promise<void> => {
-    throw new Error('TODO: implement migration in task 4');
+  up: async (queryInterface: QueryInterface): Promise<void> => {
+    await queryInterface.createTable('Movies', {
+      id: {
+        type: 'integer',
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: { type: 'varchar' },
+      seatId: {
+        type: 'integer',
+        allowNull: true,
+        references: {
+          model: {
+            tableName: 'Seats',
+          },
+          key: 'id',
+        },
+        onDelete: 'cascade',
+      },
+      createdAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+    } as ModelAttributes);
+
+    await queryInterface.createTable('Seats', {
+      id: {
+        type: 'integer',
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      fill: { type: 'boolean' },
+      createdAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+    } as ModelAttributes);
+
+    await queryInterface.createTable('ShowTimes', {
+      id: {
+        type: 'integer',
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      timeSlots: { type: 'boolean' },
+      seatId: {
+        type: 'integer',
+        allowNull: true,
+        references: {
+          model: {
+            tableName: 'Seats',
+          },
+          key: 'id',
+        },
+        onDelete: 'cascade',
+      },
+      createdAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: 'timestamp',
+        defaultValue: literal('CURRENT_TIMESTAMP'),
+      },
+    } as ModelAttributes);
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,4 +1,7 @@
 import Event from './entities/event.entity';
+import Workshop from "./entities/workshop.entity";
+import { Op } from 'sequelize';
+
 
 
 export class EventsService {
@@ -85,7 +88,21 @@ export class EventsService {
      */
 
   async getEventsWithWorkshops() {
-    throw new Error('TODO task 1');
+
+    // This will work when we will have associations on the database
+
+    Event.hasOne(Workshop, {
+      foreignKey: 'id'
+    });
+
+    // Workshop.belongsTo(Event, {
+    //   foreignKey: 'eventId'
+    // })
+
+    return await Event.findAll({
+      include: Workshop
+    })
+
   }
 
   /* TODO: complete getFutureEventWithWorkshops so that it returns events with workshops, that have not yet started
@@ -155,6 +172,20 @@ export class EventsService {
     ```
      */
   async getFutureEventWithWorkshops() {
-    throw new Error('TODO task 2');
+    // throw new Error('TODO task 2');
+    Event.hasOne(Workshop, {
+      foreignKey: 'id'
+    });
+
+    const presentDate = new Date().toLocaleDateString('en');
+
+    return await Event.findAll({
+      include: Workshop,
+      where : {
+        start: {
+          [Op.gt] : presentDate
+        }
+      }
+    })
   }
 }
